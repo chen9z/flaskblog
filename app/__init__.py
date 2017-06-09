@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN']=True
 db=SQLAlchemy(app)
 
 
-def log(name,msg):
+def log(name,msg=''):
     logging.info('%s:%s'%(name,msg))
 
 from app import views

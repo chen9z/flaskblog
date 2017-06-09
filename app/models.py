@@ -11,7 +11,7 @@ def next_id():
     return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
 
 
-class Users(db.Model):
+class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.VARCHAR(50), primary_key=True, default=next_id())
     name = db.Column(db.VARCHAR(50))
@@ -25,7 +25,7 @@ class Users(db.Model):
         return '<User %r>' % (self.name)
 
 
-class Blogs(db.Model):
+class Blog(db.Model):
     __tablename__ = 'blogs'
     id = db.Column(db.VARCHAR(50), primary_key=True, default=next_id())
     name = db.Column(db.VARCHAR(50))

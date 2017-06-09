@@ -8,6 +8,8 @@
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/uikit.js"></script>
     <script src="/static/js/vue.js"></script>
+    <script src="/static/js/sha1.min"></script>
+    <script src="/static/js/awesome.js"></script>
     <title>{% block title %}?{% endblock %} yclooper's blog</title>
 </head>
 <body>
@@ -37,7 +39,7 @@
                         </div>
                     </li>
                 {% else %}
-                    <li><a href="/signin"><i class="uk-icon-sign-in"></i> 登陆</a></li>
+                    <li><a href="/login"><i class="uk-icon-sign-in"></i> 登陆</a></li>
                     <li><a href="/register"><i class="uk-icon-edit"></i> 注册</a></li>
                 {% endif %}
             </ul>

@@ -5,11 +5,11 @@
     <title>登录-yclooper Python</title>
     <link rel="stylesheet" href="../static/css/uikit.css">
     <link rel="stylesheet" href="../static/css/uikit.gradient.css">
-    <script src="../static/js/jquery.min.js"></script>
-    <script src="../static/js/uikit.js"></script>
-    <script src="../static/js/vue.js"></script>
-    <script src="../static/js/awesome.js"></script>
-    <script src="../static/js/sha1.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/uikit.js"></script>
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/awesome.js"></script>
+    <script src="/static/js/sha1.min.js"></script>
     <script>
         $(function () {
             new Vue({
@@ -28,14 +28,14 @@
                         if (!this.passwd.trim().length) {
                             return form.showFormError('密码不能空');
                         }
-                        form.postJSON('/api/authenticate', {
+                        form.postJSON('/login', {
                             email: this.email.toLowerCase(),
                             passwd: CryptoJS.SHA1(this.email + ':' + this.passwd).toString()
                         }, function (err, r) {
                             if (err) {
-                                return form.showFormError(err)
+                                form.showFormError(err)
                             }
-                            return location.assign('/');
+{#                            return location.assign('/');#}
                         });
                     }
                 }
