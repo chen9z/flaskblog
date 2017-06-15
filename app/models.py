@@ -21,6 +21,12 @@ class User(db.Model):
     image = db.Column(db.VARCHAR(500))
     created_at = db.Column(db.Float, default=time.time())
 
+    def ob2dict(self):
+        d = self.__dict__.copy()
+        d['passwd']='******'
+        d.pop('_sa_instance_state')
+        return d
+
     def __repr__(self):
         return '<User %r>' % (self.name)
 
