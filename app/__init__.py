@@ -17,3 +17,4 @@ def log(name,msg=''):
     logging.info('%s:%s'%(name,msg))
 
 from app import views
+
