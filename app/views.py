@@ -5,6 +5,7 @@ from app import app, log
 from app.models import User, Blog, Comment
 import hashlib, json, time
 from config import Config
+from app import db
 
 __author__ = 'yclooper'
 
@@ -14,6 +15,9 @@ def check_empty(**kw):
         if not v or not v.strip():
             abort(400, '%s can not empty.' % k)
 
+def check_admin(user):
+    if(user.name!='yclooper'):
+        abort(400,'no permission')
 
 def user2cookie(user, max_age=86400):
     expires = str(int(time.time()) + max_age)
@@ -24,7 +28,7 @@ def user2cookie(user, max_age=86400):
 
 def cookie2user():
     cookies = request.cookies.get(Config.COOKIE_NAME)
-    log('cookie',cookies)
+    log('cookie', cookies)
     if not cookies:
         return None
     L = cookies.split('-')
@@ -38,19 +42,18 @@ def cookie2user():
         return None
     s = '%s-%s-%s-%s' % (user.id, user.passwd, expires, Config.COOKIE_KEY)
     if sha1 == hashlib.sha1(s.encode('utf-8')).hexdigest():
-        log('验证成功',user.__str__())
+        log('验证成功', user.__str__())
         return user
 
 
 @app.before_request
 def before_request():
-    g.user=cookie2user()
+    g.user = cookie2user()
 
-def after_request(fn):
-    def wrapper(*args, **kw):
-        request.cookies.get()
-        return fn(*args, **kw)
-    return wrapper
+
+# @app.after_request
+# def after_request(response):
+#     print(response.json)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -93,17 +96,32 @@ def login():
         else:
             abort(400, '找不到此用户')
 
-@app.route('/signout',methods=['GET','POST'])
+
+@app.route('/signout', methods=['GET', 'POST'])
 def sign_out():
-    log('url',url_for('index'))
-    resp=make_response(render_template('index.html'))
-    resp.set_cookie(Config.COOKIE_NAME,'',max_age=86400,httponly=True)
+    log('url', url_for('index'))
+    resp = make_response(render_template('index.html'))
+    resp.set_cookie(Config.COOKIE_NAME, '', max_age=86400, httponly=True)
     return resp
+
 
 @app.route('/manage/blogs')
 def manage_blogs():
-    pass
+    return render_template('manage_blogs.html')
 
-@app.route('/manage/blog/create')
+@app.route('/manage/blogs/create')
+def manage_blog():
+    return render_template('manage_blog_edit.html', id='', action='/api/blogs/create')
+
+
+@app.route('/api/blogs/create', methods=['GET','POST'])
 def blog_create():
-    return render_template('manage_blog_edit.html',id='',action='api/create')
+    name = request.json.get('name')
+    content = request.json.get('content')
+    check_empty(name=name,content=content)
+    check_admin(g.user)
+    blog = Blog(name=name, content=content, user_name=g.user.name,user_id=g.user.id, user_image=g.user.image)
+    db.session.add(blog)
+    db.session.commit()
+    return jsonify(name=blog.name,content=blog.content)
+

@@ -2,8 +2,8 @@
 {% block title %}编写日志{% endblock %}
 {% block beforehead %}
     <script>
-        var ID = '{{ id }}',
-            action = '{{ action }}';
+        var ID = '{{id}}',
+            action = '{{action}}';
         function initVm(blog) {
             new Vue({
                 el: '#vm',
@@ -37,7 +37,6 @@
                 $('#loading').hide();
                 initVm({
                     name: '',
-                    summary: '',
                     content: ''
                 });
             }

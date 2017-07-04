@@ -6,11 +6,14 @@
     <link href="/static/css/uikit.css" rel="stylesheet">
     <link href="/static/css/uikit.gradient.css" rel="stylesheet">
     <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/uikit.js"></script>
-    <script src="/static/js/vue.js"></script>
     <script src="/static/js/sha1.min.js"></script>
     <script src="/static/js/awesome.js"></script>
+    <script src="/static/js/uikit.js"></script>
+    <script src="/static/js/vue.js"></script>
+
     <title>{% block title %}?{% endblock %} yclooper's blog</title>
+    {% block beforehead %}
+    {% endblock %}
 </head>
 <body>
 <nav class="uk-navbar uk-navbar-attached">
