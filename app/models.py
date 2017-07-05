@@ -23,9 +23,10 @@ class User(db.Model):
 
     def ob2dict(self):
         d = self.__dict__.copy()
-        d['passwd']='******'
+        d['passwd'] = '******'
         d.pop('_sa_instance_state')
         return d
+
     def __repr__(self):
         return '<User %r>' % (self.name)
 
@@ -38,10 +39,15 @@ class Blog(db.Model):
     user_id = db.Column(db.VARCHAR(50))
     user_image = db.Column(db.VARCHAR(500))
     user_name = db.Column(db.VARCHAR(50))
-    created_at = db.Column(db.Float,default=time.time())
+    created_at = db.Column(db.Float, default=time.time())
 
     def __repr__(self):
         return '<Blog %r>' % (self.name)
+
+    def ob2dict(self):
+        d = self.__dict__.copy()
+        d.pop('_sa_instance_state')
+        return d
 
 
 class Comment(db.Model):
@@ -52,7 +58,7 @@ class Comment(db.Model):
     user_name = db.Column(db.VARCHAR(50))
     user_image = db.Column(db.VARCHAR(500))
     content = db.Column(db.TEXT)
-    created_at = db.Column(db.Float,default=time.time())
+    created_at = db.Column(db.Float, default=time.time())
 
     def __repr__(self):
         return '<Comment %r>' % (self.content)

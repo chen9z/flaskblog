@@ -107,11 +107,12 @@ def sign_out():
 
 @app.route('/manage/blogs')
 def manage_blogs():
-    return render_template('manage_blogs.html')
+
+    return render_template('manage_blogs.html',user=g.user)
 
 @app.route('/manage/blogs/create')
 def manage_blog():
-    return render_template('manage_blog_edit.html', id='', action='/api/blogs/create')
+    return render_template('manage_blog_edit.html', id='', action='/api/blogs/create',user=g.user)
 
 
 @app.route('/api/blogs/create', methods=['GET','POST'])
@@ -125,3 +126,7 @@ def blog_create():
     db.session.commit()
     return jsonify(name=blog.name,content=blog.content)
 
+@app.route('/api/blogs')
+def get_blogs():
+    blogs = Blog.query.all()
+    return jsonify(blogs=[b.ob2dict for b in blogs])
