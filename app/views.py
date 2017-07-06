@@ -18,7 +18,7 @@ def check_empty(**kw):
 
 
 def check_admin(user):
-    if (user.name != 'yclooper'):
+    if (user.admin!=1):
         abort(400, 'no permission')
 
 
@@ -153,7 +153,7 @@ def get_blog_detail(id):
     return jsonify(blog=blog.ob2dict())
 
 
-@app.route('api/blogs/edit', methods=['POST'])
+@app.route('/api/blogs/edit', methods=['POST'])
 def blog_edit():
     id = request.json.get('id')
     name = request.json.get('name')
