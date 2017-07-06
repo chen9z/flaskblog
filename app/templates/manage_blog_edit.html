@@ -26,12 +26,12 @@
         }
         $(function () {
             if (ID) {
-                getJSON('/api/blogs/' + ID, function (err, blog) {
+                getJSON('/api/blogs/' + ID, function (err, r) {
                     if (err) {
                         return fatal(err);
                     }
                     $('#loading').hide();
-                    initVm(blog);
+                    initVm(r.blog);
                 });
             } else {
                 $('#loading').hide();

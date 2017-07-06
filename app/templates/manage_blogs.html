@@ -5,12 +5,12 @@
         function initVm(data) {
             new Vue({
                 el: '#vm',
-                data:data
+                data: data
             });
         }
         $(function () {
-            getJSON('/api/blogs',function (r,error) {
-                if(error) {
+            getJSON('/api/blogs', function (error, r) {
+                if (error) {
                     return fatal(error)
                 }
                 $('#loading').hide();
@@ -49,22 +49,30 @@
                 <tbody>
                 <tr v-for="blog of blogs">
                     <td>
-                        <a target="_blank" v-bind:href="#" v-text="blog.name"></a>
+                        <a target="_blank" v-text="blog.name" v-bind:href="'/api/blogs/'+blog.id"></a>
                     </td>
                     <td>
-                        <a target="_blank" v-bind:href="#" v-text="blog.user_name"></a>
+                        <a target="_blank" v-text="blog.user_name" v-bind:href="'/api/users/'+blog.user_id"></a>
                     </td>
                     <td>
-                        <span v-text="blog.created_at.toDataTime()"></span>
+                        <span v-text="blog.created_at.toDateTime()"></span>
                     </td>
                     <td>
-                        <a href="/api/blogs/edit/"><i class="uk-icon-edit"></i></a>
-                        <a href="/api/blogs/delete/"><i class="uk-icon-trash-o"></i></a>
+                        <a v-bind:href="'/manage/blogs/edit/'+blog.id"><i class="uk-icon-edit"></i></a>
+                        <a href="/manage/blogs/delete"><i class="uk-icon-trash-o"></i></a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+        <div class="uk-margin-top">
+            <ul class="uk-pagination">
+                <li><a href="#"></a></li>
+                <li><a href="#">1</a></li>
+                <li><a href="#"></a></li>
+            </ul>
+        </div>
     </div>
+
 {% endblock %}
 

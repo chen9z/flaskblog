@@ -33,7 +33,7 @@
             source: null,
             renderer: null,
 
-            // templates
+            // template
 
             template: '<ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">{{~items}}<li data-value="{{$item.value}}"><a>{{$item.value}}</a></li>{{/items}}</ul>'
         },

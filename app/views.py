@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 from flask import render_template, request, redirect, abort, url_for, jsonify, make_response, g
+
 from app import app, log
 from app.models import User, Blog, Comment
 import hashlib, json, time
@@ -15,9 +16,11 @@ def check_empty(**kw):
         if not v or not v.strip():
             abort(400, '%s can not empty.' % k)
 
+
 def check_admin(user):
-    if(user.name!='yclooper'):
-        abort(400,'no permission')
+    if (user.name != 'yclooper'):
+        abort(400, 'no permission')
+
 
 def user2cookie(user, max_age=86400):
     expires = str(int(time.time()) + max_age)
@@ -107,26 +110,59 @@ def sign_out():
 
 @app.route('/manage/blogs')
 def manage_blogs():
+    return render_template('manage_blogs.html', user=g.user)
 
-    return render_template('manage_blogs.html',user=g.user)
 
 @app.route('/manage/blogs/create')
 def manage_blog():
-    return render_template('manage_blog_edit.html', id='', action='/api/blogs/create',user=g.user)
+    return render_template('manage_blog_edit.html', id='', action='/api/blogs/create', user=g.user)
 
 
-@app.route('/api/blogs/create', methods=['GET','POST'])
+@app.route('/api/blogs/create', methods=['GET', 'POST'])
 def blog_create():
     name = request.json.get('name')
     content = request.json.get('content')
-    check_empty(name=name,content=content)
+    check_empty(name=name, content=content)
     check_admin(g.user)
-    blog = Blog(name=name, content=content, user_name=g.user.name,user_id=g.user.id, user_image=g.user.image)
+    blog = Blog(name=name, content=content, user_name=g.user.name, user_id=g.user.id, user_image=g.user.image)
     db.session.add(blog)
     db.session.commit()
-    return jsonify(name=blog.name,content=blog.content)
+    return jsonify(name=blog.name, content=blog.content)
+
 
 @app.route('/api/blogs')
 def get_blogs():
-    blogs = Blog.query.all()
-    return jsonify(blogs=[b.ob2dict for b in blogs])
+    blogs = Blog.query.order_by(db.desc(Blog.created_at)).all()
+    # blogs=blogs[:6]
+    return jsonify(blogs=[b.ob2dict() for b in blogs])
+
+
+@app.route('/manage/blogs/edit/<id>')
+def manage_blog_edit(id):
+    return render_template('manage_blog_edit.html', id=id, action='/api/blogs/edit', user=g.user)
+
+
+@app.route('/api/blogs/<id>')
+def get_blog_detail(id):
+    if not id:
+        abort(404)
+    check_admin(g.user)
+    blog = Blog.query.filter_by(id=id).first()
+    if not blog:
+        abort(404)
+    return jsonify(blog=blog.ob2dict())
+
+
+@app.route('api/blogs/edit', methods=['POST'])
+def blog_edit():
+    id = request.json.get('id')
+    name = request.json.get('name')
+    content = request.json.get('content')
+    check_empty(id=id, name=name, content=content)
+
+    blog = Blog.query.filter_by(id=id).first()
+    if not blog:
+        abort(400, 'no this article')
+    blog.name = name
+    blog.content = content
+    return jsonify(blog=blog.ob2dict())

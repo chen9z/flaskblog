@@ -320,6 +320,7 @@ function _httpJSON(method, url, data, callback) {
     }
     $.ajax(opt).done(function (r) {
         if (r && r.error) {
+            console.log("rrrrr:"+r);
             return callback(r);
         }
         return callback(null, r);
