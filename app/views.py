@@ -3,6 +3,7 @@
 from flask import render_template, request, redirect, abort, url_for, jsonify, make_response, g
 
 from app import app, log
+from app.apis import Page
 from app.models import User, Blog, Comment
 import hashlib, json, time
 from config import Config
@@ -10,7 +11,12 @@ from app import db
 
 __author__ = 'yclooper'
 
-
+def get_page_index():
+    page_index=request.json.get('page_index')
+    if not page_index or page_index<1:
+        return 1
+    else:
+        return page_index
 def check_empty(**kw):
     for k, v in kw.items():
         if not v or not v.strip():
@@ -18,7 +24,7 @@ def check_empty(**kw):
 
 
 def check_admin(user):
-    if (user.admin!=1):
+    if (user.admin != 1):
         abort(400, 'no permission')
 
 
@@ -110,7 +116,7 @@ def sign_out():
 
 @app.route('/manage/blogs')
 def manage_blogs():
-    return render_template('manage_blogs.html', user=g.user)
+    return render_template('manage_blogs.html', user=g.user,page_index=1)
 
 
 @app.route('/manage/blogs/create')
@@ -130,11 +136,14 @@ def blog_create():
     return jsonify(name=blog.name, content=blog.content)
 
 
-@app.route('/api/blogs')
+@app.route('/api/blogs',methods=['GET','POST'])
 def get_blogs():
-    blogs = Blog.query.order_by(db.desc(Blog.created_at)).all()
-    # blogs=blogs[:6]
-    return jsonify(blogs=[b.ob2dict() for b in blogs])
+    page_index=get_page_index()
+    num=Blog.query.count()
+    page=Page(num,page_index)
+    log('page',page.__str__())
+    blogs = Blog.query.order_by(db.desc(Blog.created_at)).offset(page.offset).limit(page.limit)
+    return jsonify(blogs=[b.ob2dict() for b in blogs],page=page.ob2dict())
 
 
 @app.route('/manage/blogs/edit/<id>')
@@ -147,7 +156,7 @@ def get_blog_detail(id):
     if not id:
         abort(404)
     check_admin(g.user)
-    blog = Blog.query.filter_by(id=id).first()
+    blog = Blog.query.filter_by(id=id).find(0, 3)
     if not blog:
         abort(404)
     return jsonify(blog=blog.ob2dict())
@@ -160,9 +169,8 @@ def blog_edit():
     content = request.json.get('content')
     check_empty(id=id, name=name, content=content)
 
-    blog = Blog.query.filter_by(id=id).first()
-    if not blog:
-        abort(400, 'no this article')
+    blog = Blog.query.filter_by(id=id).get_or_404()
     blog.name = name
     blog.content = content
+    blog.created_at = time.time()
     return jsonify(blog=blog.ob2dict())
